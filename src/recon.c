@@ -3,14 +3,14 @@
 #include <malloc.h>
 #include <mtwist.h>
 
+#define PI 3.14159
+
 int d_min = 2;      // Min depth to look at, in cm
 int d_max = 8;      // Max depth to look at for phase info, in cm
 int Nb_raw = 5000;	// Initial number of bins, a relatively large number
 int Nb_targ1 = 100;	// Temp number of motion states, or bins, after step 1
 int Nb_targ2 = 30; // Final number of motion states, or bins, after step 2
-
 // Random function generator
-uint32_t rand = mt_seed();
 
 char fname_templ[] = "dataset";
 int Nrow = 4;	// Number of rows to be used in tiled display
@@ -19,6 +19,9 @@ int Ny_fig = 1000;	// For display purposes, size of figures along y
 
 
 int recon() {
+    // Generate random number with Mersenne Twister Generator
+    unsigned long rand_int = genrand_int32();
+    
     // An array of structs and filepath strings returned by the 'inputdatasets' script
     struct S {
         char dir[10];
@@ -36,6 +39,7 @@ int recon() {
         int attn;
         int dt;
         int F0_all;
+        int F0_act;
         int bytsize;
         int npts;
         int Ndepths;
@@ -72,12 +76,32 @@ int recon() {
         memset(phi, 0, sizeof(phi)); // Initialize to 0
         
         // This line slices the Array for all timestamps and multiplies the angle with its conjugate
-        // Write and test this line in the utility.c 
-        
+        // Need to include our own impl in 'utility.c' (hint: use pointers for slicing)
         //phi(2:Nt,:,:) = angle(S_cplx(2:Nt,:,:).*conj(S_cplx(1:Nt-1,:,:)));
 
         // Generate a de-modulated version of the complex signals
         printf('Generating de-modulated complex signals\n');
+        // Need to include our own median impl in 'utility.c'
+        int median_phi = median(phi);
+
+        OCM0->par.F0_act = ((-1 * OCM0->par.F0_all*median_phi*OCM0->par.period) / OCM0->par.dt) / (2*PI);
+        
+        // Demodulate
+        int phi = phi - median_phi;
+        // Select a subset of the t axis. Early t points represent signals from the
+        // hardware and capsule themselves and are not relevant to patient motion, while
+        // signals may get very weak and noisy for later/deeper data.
+        double lambda = 1e3*OCM0->par.c/(OCM0->par.F0_all*1e6); // Wavelength, in mm 
+        double t_min = round(2*(d_min/100)/OCM0->par.c/OCM0->par.dt);   // t point corresponding to d_min
+        double t_max = round(2*(d_max/100)/OCM0->par.c/OCM0->par.dt);   // t point corresponding to d_max
+    
+        // Need to include our own [start:stop] range function impl in 'utility.c'
+        //trange = (t_min:t_max)
+        int trange[10];
+        int Nt_ = sizeof(trange) / sizeof(trange[0]);
+    
+        // Make a demodulated complex entity that binning (below) will be based on.
+        //S = abs(S_cplx(trange,:,:)) .* exp(1i*phi(trange,:,:));
     }
 
 
