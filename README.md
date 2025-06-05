@@ -72,5 +72,21 @@ _recon_ is the name of the program executable. The build folder will be auto-pop
 
 Other folders are just for organization. You can see I put the .m files in docs, and I only needed 'mtwist.c' and 'mtwist.h' from the 'mtwist-1.5' library I downloaded off the internet. 'lib' and 'scripts' are extra folders, maybe we can use 'scripts' for the scilab scripting stuff. 'lib' might need to be renamed to 'tests' so we have a folder to test individual things, idk. 
 
+### Git Commands
+
+Push your work to github:
+
+```console
+~/workspace/OCM$ git add . 
+~/workspace/OCM$ git commit -m "commit message"
+~/workspace/OCM/build$ git push origin main
+```
+
+Update your local repo:
+
+```console
+~/workspace/OCM$ git pull origin main 
+```
+
 
 
