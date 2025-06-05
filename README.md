@@ -1,7 +1,6 @@
 ## Directory Structure
 
 ```bash
-
 ├── build
 ├── docs
 │   ├── inputdatasets.m
@@ -20,14 +19,17 @@
 │   └── recon.m
 ├── include
 │   ├── mtwist.h
-│   └── recon.h
+│   ├── recon.h
+│   └── utility.h
 ├── lib
 ├── Makefile
+├── README.md
 ├── scripts
 └── src
     ├── mtwist.c
     ├── recon.c
     └── utility.c
+
 
 ```
 

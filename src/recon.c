@@ -2,6 +2,7 @@
 #include <math.h>
 #include <malloc.h>
 #include <mtwist.h>
+#include <string.h>
 
 #define PI 3.14159
 
@@ -48,7 +49,7 @@ int recon() {
     };
 
     struct OCMdata {
-        int S_cplx;
+        int S_cplx[10];
         int Smag;
         int dphi_raw;
         int dT;
@@ -99,9 +100,65 @@ int recon() {
         //trange = (t_min:t_max)
         int trange[10];
         int Nt_ = sizeof(trange) / sizeof(trange[0]);
-    
         // Make a demodulated complex entity that binning (below) will be based on.
+        // Slice S_cplx with trange, and perform element-wise multiplication with e^-i(phi[trange,:,:])
         //S = abs(S_cplx(trange,:,:)) .* exp(1i*phi(trange,:,:));
+        int S[10];
+
+        // Pick Nb_raw random time points as an initial set of motion states
+        // and associate all other time points to these motion states based
+        //  on similarity.
+        fprintf('Associating all time points to an initial, large set of motion states\n');
+        fprintf('    Processing time point (out of %6d) #      ', NT);
+        
+        // randperm(n,k) returns a row vector containing k unique integers selected randomly from 1 to n. Impl. in 'utility.c'
+        double states_raw[] = sort(randperm(NT,Nb_raw)); // Initial set of motion states
+        int Nt_round = round(Nt_/2);
+        double states_list[Nt_round][1][Nb_raw];
+        memset(states_list, 0, sizeof(states_list));
+
+        // Replace original values (use pointer arithmetic)
+        //states_list(1,1,:) = states_raw;
+        //states_v = S(:,:,states_raw);	% Representative vectors for each motion state
+        double states_list[10];
+        double states_v[10];
+        
+        // Write a norm function in 'utility.c'
+        //norm = sqrt(sum(abs(states_v).^2,1)); % 'Vector length' for each motion state
+        double norm[10];
+
+        //states_u = states_v./repmat(norm,[Nt_ 1 1]); % Unit vector version
+        double states_u[10];
+
+        double N_list[Nb_raw][1];
+        memset(N_list, 1, sizeof(N_list));
+
+        for (int iT = 1;iT<=NT,iT++)
+        {        
+            fprintf('\b\b\b\b\b\b%6d', iT);
+            // Check whether this time point has already been assigned a state
+            if (sum(states_raw == iT) == 0)
+            {
+                // This time point has not yet been assigned, test where it belongs.   
+                double test_v[10];
+                // test_v = S(:,:,iT);	% Test vector, not normalized yet
+                double test_u[10];
+                //test_u = test_v./sqrt(sum(abs(test_v).^2,1)); % Unit vector version
+                double test[10];
+                //test = abs(sum(repmat(test_u,[1 1 Nb_raw]).*conj(states_u),1));
+            }
+            //test = sum(abs(repmat(test_u,[1 1 Nb_raw]).*conj(states_u)),1);
+            // Find which motion state this time point was most similar to
+            
+            [val loc] = max(test);
+            
+            // Add this time point to the list of time point(s) associated with
+            // this motion state.
+            N_list(loc) = N_list(loc) + 1; % One more time point for this state
+            states_list(N_list(loc),1,loc) = iT;
+ 
+        }
+
     }
 
 
