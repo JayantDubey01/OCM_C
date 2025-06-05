@@ -1,6 +1,7 @@
 ### Directory Structure
 
-'''bash
+```bash
+
 ├── build
 ├── docs
 │   ├── inputdatasets.m
@@ -28,14 +29,14 @@
     ├── recon.c
     └── utility.c
 
-'''
+```
 
 A C project needs 3 directories and 1 file to work: 'src/', 'include/', and 'build/' and the 'Makefile'. Unlike higher-level langauges such as Python, compiling and executing has to be instructed by the user. The 'src/' file contains source files written in C: 'recon.c', and libraries: 'mtwist.c' (downloaded from the internet) and 'utility.c' (our own library). The 'include/' directory contains the header files that declare all the functions used in the source files. Basically the 'header' files declare functions, and the source files define/implement them. 
 
 Example:
 
 # Header File:
-'''
+```
 #ifndef MYLIB_H
 
 #define MYLIB_H
@@ -43,9 +44,9 @@ Example:
 void hello();
 
 #endif // MYLIB_H
-'''
+```
 # Source File:
-'''
+```
 #include <stdio.h>
 #include "main"
 using namepace std;
@@ -53,7 +54,7 @@ using namepace std;
 void hello() {
   cout << "Hello World";
 }
-'''
+```
 Example from this [tutorial](https://www.geeksforgeeks.org/how-do-i-create-a-library-in-c/)
 
 Now that we have the header files, declaring all functions, and the source files implementing them, along with a main.c (recon.c in our case) that uses the libraries and functions, we need to specify how to compile and run the program. This is why we need a Makefile. The Makefile is just an instruction set for the computer to follow. I followed this [tutorial](https://www.cs.colby.edu/maxwell/courses/tutorials/maketutor/), specifically the Makefile2 format. I chose this because we have libraries that need to be compiled (mtwist and utility), and since we will always add new functions to utility.c, we need to make sure utility gets recompiled everytime. To compile the project and run:
