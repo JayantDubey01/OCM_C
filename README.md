@@ -33,7 +33,7 @@
 
 ```
 
-A C project needs 3 directories and 1 file to work: 'src/', 'include/', and 'build/' and the 'Makefile'. Unlike higher-level langauges such as Python, compiling and executing has to be instructed by the user. The 'src/' directory contains source files written in C: 'recon.c', and libraries: 'mtwist.c' (downloaded from the internet) and 'utility.c' (our own library). The 'include/' directory contains the header files that declare all the functions used in the source files. Basically the 'header' files declare functions, and the source files define/implement them. 
+A C project needs 3 directories and 1 file to work: 'src/', 'include/', and 'build/' and the 'Makefile'. Unlike higher-level langauges such as Python, compiling and executing has to be instructed by the user. The 'src/' directory contains source files written in C: 'recon.c', and libraries: 'mtwist.c' (downloaded from the internet) and 'utility.c' (our own library). The 'include/' directory contains the header files that declare all the functions used in the source files. Basically the 'header' files declare functions, and the source files define/implement them. So, we have a .h file: utility.h, recon.h, and mtwist.h for every source file. 
 
 Example:
 
