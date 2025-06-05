@@ -130,7 +130,7 @@ int recon() {
         //states_u = states_v./repmat(norm,[Nt_ 1 1]); % Unit vector version
         double states_u[10];
 
-        double N_list[Nb_raw][1];
+        double N_list[Nb_raw];
         memset(N_list, 1, sizeof(N_list));
 
         for (int iT = 1;iT<=NT,iT++)
@@ -150,15 +150,21 @@ int recon() {
             //test = sum(abs(repmat(test_u,[1 1 Nb_raw]).*conj(states_u)),1);
             // Find which motion state this time point was most similar to
             
-            [val loc] = max(test);
-            
+            // Find max value and their index, store in a 2D array 
+            //[val loc] = max(test);
+            typedef struct {
+                double value;
+                int index;
+            } MaxResult;
+
+            MaxResult max;
+
             // Add this time point to the list of time point(s) associated with
             // this motion state.
-            N_list(loc) = N_list(loc) + 1; % One more time point for this state
+            N_list[max.index] = N_list(max.index) + 1; // One more time point for this state
             states_list(N_list(loc),1,loc) = iT;
- 
         }
-
+        printf('\n');
     }
 
 
