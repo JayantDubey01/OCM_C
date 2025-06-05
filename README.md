@@ -1,6 +1,6 @@
 ### Directory Structure
 
-''' bash
+'''bash
 ├── build
 ├── docs
 │   ├── inputdatasets.m
