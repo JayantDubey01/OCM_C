@@ -3,6 +3,7 @@
 #include <malloc.h>
 #include <mtwist.h>
 #include <string.h>
+#include <utility.h>
 
 #define PI 3.14159
 
@@ -32,6 +33,7 @@ int recon() {
     struct S sets[8];
     char stemdir[] = "/datadrive/OCM/PET/";
 
+    // Do we create separate structs for the separate OCMs?
     // A struct returned by the 'load_OCMdata' for S0 (maybe it inputs loaddatasets struct and generates a new array of structs)
     struct pars {
         int NT;
@@ -70,20 +72,22 @@ int recon() {
         struct OCMdata OCM0[i];
         OCM0->par.period = 1/(OCM0->par.F0_all*1000000);
         int NT = OCM0->par.NT;
-        int Nt = OCM0->par.npts;
-        int Nocm = OCM0->par.Nocm;
-        // Compute the phase increment along t
-        int phi[Nt][Nocm][NT];
-        memset(phi, 0, sizeof(phi)); // Initialize to 0
-        
+        int Nt = OCM0->par.npts;    //2000
+        int Nocm = OCM0->par.Nocm;  // 1, 2, 3, or 4
+
+        // Compute the phase increment along t; This is a contiguous 3D array
+        // NEED TO PARALLELILIZE PROCESSING OF DIFFERENT OCM DATA
+            
         // This line slices the Array for all timestamps and multiplies the angle with its conjugate
         // Need to include our own impl in 'utility.c' (hint: use pointers for slicing)
         //phi(2:Nt,:,:) = angle(S_cplx(2:Nt,:,:).*conj(S_cplx(1:Nt-1,:,:)));
+        
+        //dphi_raw should already do this??
 
         // Generate a de-modulated version of the complex signals
         printf('Generating de-modulated complex signals\n');
         // Need to include our own median impl in 'utility.c'
-        int median_phi = median(phi);
+        double median_phi = median(OCM0->dphi_raw);
 
         OCM0->par.F0_act = ((-1 * OCM0->par.F0_all*median_phi*OCM0->par.period) / OCM0->par.dt) / (2*PI);
         
@@ -108,8 +112,8 @@ int recon() {
         // Pick Nb_raw random time points as an initial set of motion states
         // and associate all other time points to these motion states based
         //  on similarity.
-        fprintf('Associating all time points to an initial, large set of motion states\n');
-        fprintf('    Processing time point (out of %6d) #      ', NT);
+        printf("Associating all time points to an initial, large set of motion states\n");
+        printf("    Processing time point (out of %6d) #      ", NT);
         
         // randperm(n,k) returns a row vector containing k unique integers selected randomly from 1 to n. Impl. in 'utility.c'
         double states_raw[] = sort(randperm(NT,Nb_raw)); // Initial set of motion states
@@ -133,7 +137,7 @@ int recon() {
         double N_list[Nb_raw];
         memset(N_list, 1, sizeof(N_list));
 
-        for (int iT = 1;iT<=NT,iT++)
+        for (int iT = 1;iT<=NT;iT++)
         {        
             fprintf('\b\b\b\b\b\b%6d', iT);
             // Check whether this time point has already been assigned a state
